@@ -14,17 +14,19 @@ namespace DocScanForWeb
         private readonly HttpListener _httpListener;
         public readonly string ipaddress = "127.0.0.1";
         public readonly int httpPort = 8181;
+        public readonly int httpsPort = 8182;
 
         public WebSocketServer()
         {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add(uriPrefix: string.Format("http://{0}:{1}/", ipaddress, httpPort));
+            _httpListener.Prefixes.Add(uriPrefix: string.Format("https://{0}:{1}/", ipaddress, httpsPort));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _httpListener.Start();
-            Console.WriteLine(string.Format("Server started at ws://{0}:{1}", ipaddress, httpPort));
+            Console.WriteLine(string.Format("Server started at ws://{0}:{1}, wss://{0}:{2}", ipaddress, httpPort, httpsPort));
             while (!cancellationToken.IsCancellationRequested)
             {
                 HttpListenerContext context = await _httpListener.GetContextAsync();
