@@ -12,41 +12,32 @@ namespace DocScanForWeb
     internal class WebSocketServer
     {
         private readonly HttpListener _httpListener;
+        public readonly string ipaddress = "127.0.0.1";
+        public readonly int httpPort = 8181;
 
-        static string hostname = "127.0.0.1";
-        static int httpPort = 8181;
-        static int httpsPort = 8182;
-
-        public WebSocketServer(string? certPath = null, string? certPass = null)
+        public WebSocketServer()
         {
-            string scheme = "http";
             _httpListener = new HttpListener();
-            _httpListener.Prefixes.Add(uriPrefix: string.Format("http://{1}:{2}/", scheme, hostname, httpPort));
-            if (certPath != null)
-            {
-                scheme = "https";
-                _httpListener.Prefixes.Add(uriPrefix: string.Format("https://{1}:{2}/", scheme, hostname, httpsPort));
-            }
+            _httpListener.Prefixes.Add(uriPrefix: string.Format("http://{0}:{1}/", ipaddress, httpPort));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _httpListener.Start();
-            Console.WriteLine(string.Format("WebSocket server started at ws://{0}:{1}/", hostname, httpPort));
+            Console.WriteLine(string.Format("Server started at ws://{0}:{1}", ipaddress, httpPort));
             while (!cancellationToken.IsCancellationRequested)
             {
                 HttpListenerContext context = await _httpListener.GetContextAsync();
-                if (context.Request.HttpMethod == "OPTIONS")
-                {
-                    HandleCorsPreflight(context);
-                }
+
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
                 if (context.Request.IsWebSocketRequest)
                 {
                     await ProcessRequest(context);
                 }
                 else
                 {
-                    context.Response.StatusCode = 400;
+                    context.Response.StatusCode = 204;
                     context.Response.Close();
                 }
             }
@@ -54,19 +45,8 @@ namespace DocScanForWeb
             _httpListener.Stop();
         }
 
-        private void HandleCorsPreflight(HttpListenerContext context)
-        {
-            context.Response.StatusCode = 200;
-            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-            context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-            context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type");
-            context.Response.Close();
-        }
-
         private async Task ProcessRequest(HttpListenerContext context)
         {
-            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-
             WebSocketContext? webSocketContext;
             try
             {
