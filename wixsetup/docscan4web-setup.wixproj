@@ -1,6 +1,6 @@
 ﻿<Project Sdk="WixToolset.Sdk/5.0.1">
   <PropertyGroup Label="Globals">
-    <DefineConstants>ProductName=$(ProductName)</DefineConstants>
+    <DefineConstants>ProductName=$(ProductName);ShortName=$(ShortProductName)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <HarvestProjectsSuppressUniqueIds>true</HarvestProjectsSuppressUniqueIds>
@@ -19,6 +19,7 @@
       <ComponentGroupName>app.binaries</ComponentGroupName>
       <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
       <SuppressRootDirectory>true</SuppressRootDirectory>
+      <VerboseOutput>true</VerboseOutput>
     </HarvestDirectory>
   </ItemGroup>
 </Project>

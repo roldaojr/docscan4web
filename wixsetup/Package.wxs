@@ -1,5 +1,11 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-	<Package Name="$(ProductName)" Manufacturer="roldaojr" Version="1.0.0.0" UpgradeCode="351bcfaa-e0e4-44f3-8e7d-a2a34f4f664c">
+	<Package
+		Name="$(ProductName)"
+		Scope="perUserOrMachine"
+		Compressed="true"
+		Manufacturer="roldaojr"
+		Version="1.0.0.0"
+		UpgradeCode="351bcfaa-e0e4-44f3-8e7d-a2a34f4f664c">
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 		<Media Id="1" Cabinet="install.cab" EmbedCab="yes"/>
 		<Feature Id="Main" Title="Main Program Files">
@@ -12,19 +18,17 @@
 			</Directory>
 		</StandardDirectory>
 		<Component Id="app.shortcuts" Guid="295aedc7-084a-4353-bf2d-f72e97eb3c3c">
-			<Shortcut Id="app.shortcuts.startmenu.add"
-					  Name="$(ProductName)"
-					  Target="$(docscan4web.TargetFileName)"
+			<Shortcut Name="!(bind.Property.ProductName)"
+					  Target="[INSTALLFOLDER]docscan4web.exe"
 					  WorkingDirectory="INSTALLFOLDER"
 					  Directory="ProgramMenuFolder"/>
-			<!--RemoveFile Id="app.shortcuts.startmenu.remove" Name="$(ProductName)" On="uninstall"/-->
-			<Shortcut Id="app.shortcuts.startup.add"
-					  Name="$(ProductName)"
-					  Target="$(docscan4web.TargetFileName)"
+			<RemoveFile Id="app.shortcuts.startmenu.remove" Directory="ProgramMenuFolder" Name="$(ProductName)" On="uninstall"/>
+			<Shortcut Name="!(bind.Property.ProductName)"
+					  Target="[INSTALLFOLDER]docscan4web.exe"
 					  WorkingDirectory="INSTALLFOLDER"
 					  Directory="StartupFolder"/>
-			<!--RemoveFile Id="app.shortcuts.startup.remove" Name="$(ProductName)" On="uninstall"/-->
-			<RegistryValue Root="HKCU" Key="Software\$(ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			<RemoveFile Id="app.shortcuts.startup.remove" Directory="StartupFolder" Name="$(ProductName)" On="uninstall"/>
+			<RegistryValue Root="HKCU" Key="Software\$(ProductName)" Name="Installed" Value="1" KeyPath="yes"/>
 		</Component>
 	</Package>
 </Wix>
