@@ -9,6 +9,8 @@
     <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.1" />
     <PackageReference Include="WixToolset.Firewall.wixext" Version="5.0.1" />
     <PackageReference Include="WixToolset.Heat" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Http.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Iis.wixext" Version="5.0.1" />
     <PackageReference Include="WixToolset.Netfx.wixext" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
