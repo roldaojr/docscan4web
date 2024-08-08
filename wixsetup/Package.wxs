@@ -39,6 +39,12 @@
 				Name="DocScan for Web certficate"
 				StoreLocation="localMachine"
 				StoreName="root"
+				BinaryRef="certificate.crt"
+				Vital="yes"/>
+			<iis:Certificate
+				Name="DocScan for Web certficate"
+				StoreLocation="localMachine"
+				StoreName="my"
 				PFXPassword="P@ssw0rd!"
 				BinaryRef="certificate.pfx"
 				Vital="yes"/>
@@ -53,5 +59,6 @@
 	</Package>
 	<Fragment>
 		<Binary Id="certificate.pfx" SourceFile="certificate.pfx" />
+		<Binary Id="certificate.crt" SourceFile="certificate.crt" />
 	</Fragment>
 </Wix>
