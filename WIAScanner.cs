@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows;
 using System.Windows.Controls;
+using WIA;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace DocScanForWeb
 {
@@ -30,15 +34,35 @@ namespace DocScanForWeb
             public const uint WIA_DPS_DOCUMENT_HANDLING_STATUS = WIA_DPS_FIRST + 13;
             public const uint WIA_DPS_DOCUMENT_HANDLING_SELECT = WIA_DPS_FIRST + 14;
         }
+        public static bool HasDevices()
+        {
+            var deviceInfos = new DeviceManager().DeviceInfos;
+            if(deviceInfos.Count == 0)
+            {
+                MessageBox.Show(
+                    "No scanner device available",
+                    "DocScan for Web",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information,
+                    MessageBoxResult.OK
+                );
+                return false;
+            }
+            return true;
+        }
         /// <summary>
         /// Use scanner to scan an image (with user selecting the scanner from a dialog).
         /// </summary>
         /// <returns>Scanned images.</returns>
         public static List<byte[]> Scan()
         {
+            if(!HasDevices())
+            {
+                return new();
+            }
             WIA.ICommonDialog dialog = new WIA.CommonDialog();
             WIA.Device device = dialog.ShowSelectDevice(
-                WIA.WiaDeviceType.ScannerDeviceType, true, false
+                WIA.WiaDeviceType.ScannerDeviceType, false, true
             );
             if (device != null)
             {
@@ -47,7 +71,7 @@ namespace DocScanForWeb
             else
             {
                 Console.WriteLine("You must select a device for scanning.");
-                return new List<byte[]>();
+                return new();
             }
         }
         /// <summary>
@@ -57,6 +81,10 @@ namespace DocScanForWeb
         /// <returns>Scanned images.</returns>
         public static List<byte[]> Scan(string scannerId)
         {
+            if (!HasDevices())
+            {
+                return new();
+            }
             List<byte[]> images = new();
             bool hasMorePages = true;
             while (hasMorePages)
