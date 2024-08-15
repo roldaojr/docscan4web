@@ -14,7 +14,7 @@
 		<Feature Id="Main" Title="Main Program Files">
 			<ComponentGroupRef Id="app.binaries" />
 			<ComponentRef Id="app.shortcuts" />
-			<ComponentRef Id="app.certificate"/>
+			<ComponentRef Id="app.certificates"/>
 		</Feature>
 		<StandardDirectory Id="ProgramFiles6432Folder">
 			<Directory Id="INSTALLFOLDER" Name="!(bind.Property.ProductName)">
@@ -34,31 +34,28 @@
 			<RemoveFile Id="app.shortcuts.startup.remove" Directory="StartupFolder" Name="$(ProductName)" On="uninstall"/>
 			<RegistryValue Root="HKCU" Key="Software\$(ProductName)" Name="Installed" Value="1" KeyPath="yes"/>
 		</Component>
-		<Component Id="app.certificate" Guid="88f4d8bf-d64e-4b3e-a451-6c546ccaaa75">
+		<Component Id="app.certificates" Guid="88f4d8bf-d64e-4b3e-a451-6c546ccaaa75">
 			<iis:Certificate
-				Name="DocScan for Web certficate"
+				Name="Open Source CA"
 				StoreLocation="localMachine"
 				StoreName="root"
-				BinaryRef="certificate.crt"
+				BinaryRef="ca.crt"
 				Vital="yes"/>
 			<iis:Certificate
 				Name="DocScan for Web certficate"
 				StoreLocation="localMachine"
 				StoreName="my"
-				PFXPassword="P@ssw0rd!"
-				BinaryRef="certificate.pfx"
+				BinaryRef="web.pfx"
 				Vital="yes"/>
 			<http:SniSslCertificate
-				AppId="app.certificate.local"
+				AppId="app.certificates.web"
 				HandleExisting="replace"
-				Host="docscan4web.localhost.direct"
+				Host="127.0.0.1"
 				Port="8182"
-				Store="root"
-				Thumbprint="d8c94afdb81f51e7365f719be1705faa27a86e36"/>
+				Store="my"
+				Thumbprint="99cc848d4e71707b2ae504e52d65995e0854f521"/>
 		</Component>
+		<Binary Id="ca.crt" SourceFile="ca.crt" />
+		<Binary Id="web.pfx" SourceFile="web.pfx" />
 	</Package>
-	<Fragment>
-		<Binary Id="certificate.pfx" SourceFile="certificate.pfx" />
-		<Binary Id="certificate.crt" SourceFile="certificate.crt" />
-	</Fragment>
 </Wix>

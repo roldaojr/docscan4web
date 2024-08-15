@@ -113,7 +113,7 @@ namespace DocScanForWeb
                     // show error with available devices
                     throw new Exception("The device with provided ID could not be found. Available Devices:\n" + availableDevices);
                 }
-                WIA.Item item = device.Items[1] as WIA.Item;
+                WIA.Item? item = device.Items[1];
                 try
                 {
                     // scan image
@@ -129,8 +129,8 @@ namespace DocScanForWeb
                 {
                     item = null;
                     //determine if there are any more pages waiting
-                    WIA.Property documentHandlingSelect = null;
-                    WIA.Property documentHandlingStatus = null;
+                    WIA.Property? documentHandlingSelect = null;
+                    WIA.Property? documentHandlingStatus = null;
                     foreach (WIA.Property prop in device.Properties)
                     {
                         if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_SELECT)
@@ -147,8 +147,13 @@ namespace DocScanForWeb
                         if ((Convert.ToUInt32(documentHandlingSelect.get_Value()) &
                         WIA_DPS_DOCUMENT_HANDLING_SELECT.FEEDER) != 0)
                         {
-                            hasMorePages = ((Convert.ToUInt32(documentHandlingStatus.get_Value()) &
-                            WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY) != 0);
+                            hasMorePages = (
+                                documentHandlingStatus != null &&
+                                (
+                                    Convert.ToUInt32(documentHandlingStatus.get_Value()) &
+                                    WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY
+                                ) != 0
+                            );
                         }
                     }
                 }

@@ -115,11 +115,11 @@ namespace DocScanForWeb
             Application.Current.Shutdown();
         }
 
-        private async void NapsScan()
+        /*private async void NapsScan()
         {
             using var scanningContext = new ScanningContext(new WpfImageContext());
             var controller = new ScanController(scanningContext);
             var devices = await controller.GetDeviceList();
-        }
+        }*/
     }
 }
