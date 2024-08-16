@@ -24,4 +24,7 @@
       <VerboseOutput>true</VerboseOutput>
     </HarvestDirectory>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="signtool sign /fd sha256 $(TargetPath)" />
+  </Target>
 </Project>
