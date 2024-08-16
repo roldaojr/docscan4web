@@ -57,5 +57,14 @@
 		</Component>
 		<Binary Id="ca.crt" SourceFile="ca.crt" />
 		<Binary Id="web.pfx" SourceFile="web.pfx" />
+		<CustomAction Id="app.runafterinstall"
+		  Execute="immediate"
+		  Impersonate="yes"
+		  Return="asyncNoWait"
+		  Directory="INSTALLFOLDER"
+		  ExeCommand="[INSTALLFOLDER]docscan4web.exe"/>
+		<InstallExecuteSequence>
+			<Custom Action="app.runafterinstall" After="InstallFinalize" Condition="NOT Installed" />
+		</InstallExecuteSequence>
 	</Package>
 </Wix>
