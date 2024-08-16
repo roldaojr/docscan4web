@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows;
-using System.Windows.Controls;
 using WIA;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace DocScanForWeb
 {

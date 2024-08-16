@@ -6,8 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Windows;
-using NAPS2.Scan;
-using NAPS2.Images.Wpf;
 
 namespace DocScanForWeb
 {
@@ -114,12 +112,5 @@ namespace DocScanForWeb
         {
             Application.Current.Shutdown();
         }
-
-        /*private async void NapsScan()
-        {
-            using var scanningContext = new ScanningContext(new WpfImageContext());
-            var controller = new ScanController(scanningContext);
-            var devices = await controller.GetDeviceList();
-        }*/
     }
 }
