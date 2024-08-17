@@ -47,23 +47,27 @@
 				StoreName="my"
 				BinaryRef="web.pfx"
 				Vital="yes"/>
-			<http:SniSslCertificate
-				AppId="app.certificates.web"
-				HandleExisting="replace"
-				Host="127.0.0.1"
-				Port="8182"
-				Store="my"
-				Thumbprint="99cc848d4e71707b2ae504e52d65995e0854f521"/>
 		</Component>
 		<Binary Id="ca.crt" SourceFile="ca.crt" />
 		<Binary Id="web.pfx" SourceFile="web.pfx" />
+		<SetProperty Id="app.certificate.install"
+					 Value="&quot;netsh.exe&quot; http add sslcert ipport=127.0.0.1:8182 certhash=57cbe19db0827835f7895b335f34f95db264f480"
+					 Before="app.certificate.install"
+					 Sequence="execute" />
+		<CustomAction Id="app.certificate.install"
+					  Execute="deferred"
+					  Impersonate="no"
+					  BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
+					  DllEntry="WixQuietExec"
+					  Return="check"/>
 		<CustomAction Id="app.runafterinstall"
-		  Execute="immediate"
-		  Impersonate="yes"
-		  Return="asyncNoWait"
-		  Directory="INSTALLFOLDER"
-		  ExeCommand="[INSTALLFOLDER]docscan4web.exe"/>
+					  Execute="immediate"
+					  Impersonate="yes"
+					  Return="asyncNoWait"
+					  Directory="INSTALLFOLDER"
+					  ExeCommand="[INSTALLFOLDER]docscan4web.exe"/>
 		<InstallExecuteSequence>
+			<Custom Action="app.certificate.install" Before="CreateShortcuts" Condition="NOT Installed" />
 			<Custom Action="app.runafterinstall" After="InstallFinalize" Condition="NOT Installed" />
 		</InstallExecuteSequence>
 	</Package>
