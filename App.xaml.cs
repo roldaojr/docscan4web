@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace DocScanForWeb
+namespace docscan4web
 {
     /// <summary>
     /// Interaction logic for App.xaml

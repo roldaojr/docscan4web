@@ -6,21 +6,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Windows;
+using System.IO;
+using StreamJsonRpc;
 
-namespace DocScanForWeb
+namespace docscan4web
 {
-    internal class WebSocketServer
+    internal class WebSocketServer : IDisposable
     {
-        private readonly HttpListener _httpListener;
+        public static Dictionary<Guid, Tuple<HttpListenerWebSocketContext, Guid?>> Clients = new Dictionary<Guid, Tuple<HttpListenerWebSocketContext, Guid?>>();
         public readonly string ipaddress = "127.0.0.1";
         public readonly int httpPort = 8181;
         public readonly int httpsPort = 8182;
 
+        private HttpListener _httpListener;
+        private CancellationTokenSource _cancellation;
+
         public WebSocketServer()
         {
             _httpListener = new HttpListener();
-            _httpListener.Prefixes.Add(uriPrefix: string.Format("http://{0}:{1}/", ipaddress, httpPort));
-            _httpListener.Prefixes.Add(uriPrefix: string.Format("https://{0}:{1}/", ipaddress, httpsPort));
+            _httpListener.Prefixes.Add(uriPrefix: $"http://{ipaddress}:{httpPort}/");
+            _httpListener.Prefixes.Add(uriPrefix: $"https://{ipaddress}:{httpsPort}/");
+            _cancellation = new CancellationTokenSource();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -35,7 +41,7 @@ namespace DocScanForWeb
 
                 if (context.Request.IsWebSocketRequest)
                 {
-                    await ProcessRequest(context);
+                    await AcceptClientAsync(context, cancellationToken);
                 }
                 else
                 {
@@ -47,13 +53,18 @@ namespace DocScanForWeb
             _httpListener.Stop();
         }
 
-        private async Task ProcessRequest(HttpListenerContext context)
+        private async Task AcceptClientAsync(HttpListenerContext context, CancellationToken cancellation)
         {
-            WebSocketContext? webSocketContext;
             try
             {
-                webSocketContext = await context.AcceptWebSocketAsync(subProtocol: null);
-                Console.WriteLine("WebSocket connection established");
+                var webSocketContext = await context.AcceptWebSocketAsync(null, new TimeSpan(0, 0, 3));
+                Guid connectionId = Guid.NewGuid();
+                Clients.Add(connectionId, new Tuple<HttpListenerWebSocketContext, Guid?>(webSocketContext, null));
+                Console.WriteLine($"New WebSocket connection established {connectionId}");
+                _ = Task.Run(
+                    () => HandleConnectionAsync(webSocketContext),
+                    CancellationToken.None
+                );
             }
             catch (Exception e)
             {
@@ -62,55 +73,95 @@ namespace DocScanForWeb
                 Console.WriteLine("Exception: " + e);
                 return;
             }
+        }
 
-            WebSocket webSocket = webSocketContext.WebSocket;
+        private async Task HandleConnectionAsync(HttpListenerWebSocketContext ctx)
+        {
+            var jsonRpcMessageHandler = new WebSocketMessageHandler(ctx.WebSocket);
+            using var jsonRpc = new JsonRpc(jsonRpcMessageHandler, new ScannerService());
+            jsonRpc.StartListening();
+            await jsonRpc.Completion;
+        }
 
-            try
-            {
-                while (webSocket.State == WebSocketState.Open)
+        private async Task HandleConnectionAsyncAlt(WebSocket webSocket, Guid connectionId, CancellationToken cancellation)
+        {
+             try {
+                while (webSocket.State == WebSocketState.Open && !cancellation.IsCancellationRequested)
                 {
-                    ArraySegment<byte> buffer = new(new byte[1024]);
-                    WebSocketReceiveResult result = await webSocket.ReceiveAsync(buffer, CancellationToken.None);
+                    string message = await ReadString(webSocket).ConfigureAwait(false);
 
-                    if (result.MessageType == WebSocketMessageType.Close)
+                    if (message.Contains("method"))
                     {
-                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                    }
-                    else
-                    {
-                        string receivedMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
-                        Console.WriteLine("Received: " + receivedMessage);
-
-                        if (receivedMessage == "1100")
+                        /*string returnString = await JsonRpcProcessor.Process(message, connectionId);
+                        if (returnString.Length != 0)
                         {
-                            List<byte[]> pages = WIAScanner.Scan();
-                            foreach (var page in pages)
+                            ArraySegment<byte> outputBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(returnString));
+                            if (webSocket.State == WebSocketState.Open)
                             {
-                                await webSocket.SendAsync(page, WebSocketMessageType.Binary, true, CancellationToken.None);
+                                await webSocket.SendAsync(outputBuffer, WebSocketMessageType.Text, true, cancellation).ConfigureAwait(false);
                             }
-                        }
-                        else
-                        {
-                            string responseMessage = "Echo: " + receivedMessage;
-                            buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(responseMessage));
-                            await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-                        }
+                        }*/
                     }
                 }
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done", CancellationToken.None);
             }
             catch (Exception e)
             {
+                try
+                {
+                    await webSocket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Done", CancellationToken.None).ConfigureAwait(false);
+                }
+                catch
+                {
+                }
                 Console.WriteLine("Exception: " + e);
             }
             finally
             {
+                Tuple<HttpListenerWebSocketContext, Guid?> client;
+                Clients.TryGetValue(connectionId, out client);
+                if (client != null)
+                {
+                    Clients.Remove(connectionId);
+                }
                 webSocket.Dispose();
             }
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
+        private static async Task<String> ReadString(WebSocket ws)
         {
-            Application.Current.Shutdown();
+            ArraySegment<byte> buffer = new ArraySegment<byte>(new Byte[8192]);
+
+            WebSocketReceiveResult? result;
+
+            using var ms = new MemoryStream();
+            do
+            {
+                result = await ws.ReceiveAsync(buffer, CancellationToken.None);
+                ms.Write(buffer.Array, buffer.Offset, result.Count);
+            }
+            while (!result.EndOfMessage);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            using var reader = new StreamReader(ms, Encoding.UTF8);
+            return reader.ReadToEnd();
+        }
+
+        public void Dispose()
+        {
+            if (_httpListener != null && _cancellation != null)
+            {
+                try
+                {
+                    _cancellation.Cancel();
+                    _httpListener.Stop();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception: " + e);
+                }
+            }
         }
     }
 }
