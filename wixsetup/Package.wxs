@@ -1,13 +1,14 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	 xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx"
 	 xmlns:http="http://wixtoolset.org/schemas/v4/wxs/http"
-	 xmlns:iis="http://wixtoolset.org/schemas/v4/wxs/iis">
+	 xmlns:iis="http://wixtoolset.org/schemas/v4/wxs/iis"
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	<Package
 		Name="$(ProductName)"
 		Scope="perMachine"
 		Compressed="true"
-		Manufacturer="roldaojr"
-		Version="1.0.0.0"
+		Manufacturer="$(ManufacturerName)"
+		Version="$(Version)"
 		UpgradeCode="351bcfaa-e0e4-44f3-8e7d-a2a34f4f664c">
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 		<Media Id="1" Cabinet="install.cab" EmbedCab="yes"/>

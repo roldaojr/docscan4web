@@ -3,5 +3,7 @@
   <PropertyGroup>
 	  <ProductName>DocScan for Web</ProductName>
 	  <ShortProductName>docscan4web</ShortProductName>
+	  <ManufacturerName>roldaojr</ManufacturerName>
+	  <Version>0.1.0.1</Version>
   </PropertyGroup>
 </Project>

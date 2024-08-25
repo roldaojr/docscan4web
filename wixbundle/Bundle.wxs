@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+	 xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx"
+	 xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+	<Bundle
+		Name="DocScan for Web Installer"
+		Manufacturer="$(ManufacturerName)"
+		Version="$(Version)"
+		UpgradeCode="{1aa11860-80db-4d72-80f3-9f4fa1712bda}">
+		<BootstrapperApplication>
+			<bal:WixStandardBootstrapperApplication Theme="none" />
+		</BootstrapperApplication>
+		<Chain>
+			<PackageGroupRef Id="DotNetDesktopRedist" />
+			<MsiPackage Id="DocScanForWebSetup" SourceFile="..\wixsetup\bin\x64\$(Configuration)\en-US\docscan4web-setup.msi"/>
+		</Chain>
+	</Bundle>
+	<Fragment>
+		<netfx:DotNetCompatibilityCheck
+			Property="DOTNETRUNTIMECHECK"
+			RollForward="major"
+			RuntimeType="desktop"
+			Platform="x64"
+			Version="8.0.8"/>
+		<PackageGroup Id="DotNetDesktopRedist">
+			<ExePackage Id="DotNetDesktop"
+						DetectCondition="DOTNETRUNTIMECHECK"
+						Vital="yes"
+						Permanent="yes"
+						Protocol="burn"
+						InstallArguments="/install /quiet /norestart"
+						RepairArguments="/repair /quiet /norestart"
+						UninstallArguments="/uninstall /quiet /norestart">
+				<ExePackagePayload
+					Name="windowsdesktop-runtime-win-x64.exe"
+					DownloadUrl="https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe"
+					Hash="27484ffb1e9ce5e6290cda8f5f49563cf4a9e2692aa57429fcd0d3de4f30fc2fce204b1b120349ed50712e95d3fa51037ebaf9b7fd60c41856857b1372e0eac7"
+					Size="58492592"/>
+			</ExePackage>
+		</PackageGroup>
+	</Fragment>
+</Wix>

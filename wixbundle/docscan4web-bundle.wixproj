@@ -1,0 +1,17 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.1">
+  <PropertyGroup Label="Globals">
+    <DefineConstants>
+			ProductName=$(ProductName);
+			ShortName=$(ShortProductName);
+			ManufacturerName=$(ManufacturerName);
+			Version=$(Version)
+		</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Bundle</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Netfx.wixext" Version="5.0.1" />
+  </ItemGroup>
+</Project>

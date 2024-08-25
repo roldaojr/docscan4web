@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "docscan4web", "docscan4web.
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "docscan4web-setup", "wixsetup\docscan4web-setup.wixproj", "{0ECE516E-FED1-43B5-A5DA-B107CEA6C805}"
 EndProject
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "docscan4web-bundle", "wixbundle\docscan4web-bundle.wixproj", "{EA744FDE-CC60-4651-A9BB-2AA93D980D71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,22 @@ Global
 		{0ECE516E-FED1-43B5-A5DA-B107CEA6C805}.Release|x64.Build.0 = Release|x64
 		{0ECE516E-FED1-43B5-A5DA-B107CEA6C805}.Release|x86.ActiveCfg = Release|x86
 		{0ECE516E-FED1-43B5-A5DA-B107CEA6C805}.Release|x86.Build.0 = Release|x86
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|Any CPU.Build.0 = Debug|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|ARM64.Build.0 = Debug|ARM64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|x64.ActiveCfg = Debug|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|x64.Build.0 = Debug|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|x86.ActiveCfg = Debug|x86
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Debug|x86.Build.0 = Debug|x86
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|Any CPU.ActiveCfg = Release|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|Any CPU.Build.0 = Release|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|ARM64.ActiveCfg = Release|ARM64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|ARM64.Build.0 = Release|ARM64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|x64.ActiveCfg = Release|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|x64.Build.0 = Release|x64
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|x86.ActiveCfg = Release|x86
+		{EA744FDE-CC60-4651-A9BB-2AA93D980D71}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
